@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>데일리뉴스</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;color:#222;background:#fff;line-height:1.5;font-size:14px;letter-spacing:-.2px}
+a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}
+ul,ol{list-style:none}
+.wrap{max-width:1100px;margin:0 auto;padding:0 14px}
+/* 상단 유틸 */
+.util{border-bottom:1px solid #e5e5e5;font-size:12px;color:#666}
+.util .wrap{display:flex;justify-content:space-between;height:30px;align-items:center}
+.util ul{display:flex;gap:14px}
+/* 로고 */
+.logo-row{display:flex;justify-content:space-between;align-items:center;padding:18px 0 14px}
+.logo{font-size:30px;font-weight:900;letter-spacing:-2px;color:#1b7a3d}
+.logo em{font-style:normal;color:#2e9e52}
+.search{border:1px solid #bbb;display:flex;height:30px}
+.search input{border:0;padding:0 8px;width:170px;font-size:13px;outline:0}
+.search button{border:0;background:#1b7a3d;color:#fff;padding:0 12px;font-size:12px}
+/* 메뉴 */
+nav{border-top:2px solid #1b7a3d;border-bottom:1px solid #ccc;overflow-x:auto}
+nav ul{display:flex;white-space:nowrap}
+nav a{display:block;padding:10px 14px;font-weight:700;font-size:15px}
+nav li:first-child a{color:#2e9e52}
+/* 속보 */
+.latest{border-bottom:1px solid #e5e5e5;font-size:13px}
+.latest .wrap{display:flex;gap:10px;height:34px;align-items:center}
+.latest b{color:#2e9e52;flex:none}
+#ticker{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+/* 본문 레이아웃 */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:30px;padding:20px 0 10px}
+.side{border-left:1px solid #e5e5e5;padding-left:24px}
+/* 사진 */
+.ph{background:#d9dcdf;position:relative;overflow:hidden}
+.ph:after{content:"";position:absolute;left:50%;top:50%;width:28%;max-width:44px;aspect-ratio:1;transform:translate(-50%,-50%);border:2px solid #b8bcc0;border-radius:50%;opacity:.8}
+.ph.has:after{display:none}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.r169{aspect-ratio:16/9}.r43{aspect-ratio:4/3}
+.cap{font-size:12px;color:#777;margin-top:4px}
+/* 헤드라인 */
+.top-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;padding-bottom:18px;border-bottom:1px solid #ddd}
+.big h1{font-size:27px;line-height:1.3;font-weight:800;margin:10px 0 8px;letter-spacing:-1px}
+.big p{color:#555;font-size:14px;line-height:1.6}
+.time{color:#999;font-size:12px;margin-top:6px}
+.sub li{padding:10px 0;border-bottom:1px solid #eee;display:flex;gap:10px}
+.sub li:first-child{padding-top:0}
+.sub .ph{width:96px;flex:none}
+.sub a{font-size:15px;font-weight:700;line-height:1.4}
+.sub .time{margin-top:3px}
+/* 섹션 */
+.sec{padding:16px 0;border-bottom:1px solid #ddd}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.sec-h h2{font-size:17px;font-weight:800;border-left:4px solid #1b7a3d;padding-left:8px;line-height:1}
+.sec-h a{font-size:12px;color:#888}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.cols3 h3{font-size:15px;font-weight:700;line-height:1.4;margin-top:6px}
+.txt li{padding:7px 0;border-top:1px solid #eee;font-size:14px}
+.txt li:before{content:"·";margin-right:5px;color:#999}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.row li{display:flex;gap:10px;padding:9px 0;border-top:1px solid #eee}
+.row li:first-child{border-top:0;padding-top:0}
+.row .ph{width:110px;flex:none}
+.row a{font-weight:700;font-size:15px;line-height:1.4}
+.row p{font-size:13px;color:#777;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* 사이드 */
+.rank li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:14px}
+.rank b{color:#2e9e52;width:14px;flex:none}
+.rank li:nth-child(n+4) b{color:#333}
+.photo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.photo p{font-size:12px;line-height:1.35;margin-top:3px}
+/* 광고 */
+.ad{position:relative;text-align:center;margin:14px 0}
+.ad img{max-width:100%;height:auto;display:inline-block}
+.ad .label{position:absolute;top:0;right:0;background:#fff;border:1px solid #ccc;color:#777;font-size:10px;padding:0 4px}
+.ad-placeholder{background:#f1f1f1;color:#aaa;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid #e0e0e0;margin:0 auto}
+/* 푸터 */
+footer{background:#f3f3f3;border-top:1px solid #ccc;margin-top:24px;font-size:12px;color:#666}
+.f-links{border-bottom:1px solid #ddd;background:#fff}
+.f-links ul{display:flex;flex-wrap:wrap;gap:4px 18px;padding:12px 0}
+.f-links a{color:#333;font-weight:700}
+.f-links li:nth-child(2) a{color:#2e9e52}
+.f-main{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:24px;padding:22px 0}
+.f-main h4{color:#333;font-size:13px;margin-bottom:8px}
+.f-main li{padding:2px 0}
+.f-logo{font-size:22px;font-weight:900;letter-spacing:-1.5px;color:#1b7a3d;margin-bottom:8px}.f-logo em{font-style:normal;color:#2e9e52}
+.f-info{line-height:1.75}
+.f-sns{display:flex;gap:6px;margin-top:10px}
+.f-sns a{border:1px solid #bbb;background:#fff;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.f-bottom{border-top:1px solid #ddd;padding:14px 0 22px;line-height:1.7;color:#888}
+@media(max-width:860px){
+ .layout{grid-template-columns:1fr}.side{border:0;padding:0}
+ .top-grid,.cols2{grid-template-columns:1fr}.cols3{grid-template-columns:1fr 1fr}
+ .big h1{font-size:22px}.f-main{grid-template-columns:1fr 1fr}.search{display:none}
+}
+.a-cat{color:#2e9e52;font-weight:800;font-size:14px;margin-top:6px}
+.a-title{font-size:30px;line-height:1.3;font-weight:800;letter-spacing:-1px;margin:6px 0 10px}
+.a-meta{display:flex;justify-content:space-between;align-items:center;color:#777;font-size:13px;padding:10px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd;margin-bottom:16px}
+.a-meta button{border:1px solid #bbb;background:#fff;padding:4px 10px;font-size:12px;cursor:pointer}
+.a-body p{font-size:17px;line-height:1.85;margin:0 0 18px;word-break:keep-all}
+.a-sub{font-size:16px;color:#555;border-left:3px solid #1b7a3d;padding-left:10px;margin:0 0 16px;line-height:1.6}
+.a-end{color:#888;font-size:12px;margin:8px 0 14px}
+.a-back{display:inline-block;margin:10px 0;border:1px solid #1b7a3d;color:#1b7a3d;padding:6px 14px;font-weight:700}
+@media(max-width:860px){.a-title{font-size:23px}.a-body p{font-size:16px}}
+</style>
+</head>
+<body>
+
+<div class="util"><div class="wrap"><span id="today"></span></div></div>
+<div class="wrap">
+ <div class="logo-row">
+  <a class="logo" href="#/">데일리<em>뉴스</em></a>
+  <form class="search" onsubmit="return false"><input placeholder="검색어를 입력하세요"><button>검색</button></form>
+ </div>
+</div>
+<nav><div class="wrap"><ul id="menu"></ul></div></nav>
+<div class="latest"><div class="wrap"><b>최신뉴스</b><div id="ticker"></div></div></div>
+
+<div class="wrap">
+ <!-- 광고 슬롯: 상단 배너 -->
+ <div class="ad" data-slot="top-banner"></div>
+
+ <div class="layout">
+  <main>
+   <div id="home"><section id="headline"></section>
+   <div class="ad" data-slot="mid-banner"></div>
+   <section class="sec"><div class="sec-h"><h2>정치·경제</h2><a href="#/c/정치·경제">더보기 &gt;</a></div><div class="cols3" id="biz"></div></section>
+   <section class="sec"><div class="sec-h"><h2>사회</h2><a href="#/c/사회">더보기 &gt;</a></div><ul class="row" id="soc"></ul></section>
+   <div class="cols2">
+    <section class="sec"><div class="sec-h"><h2>연예·스포츠</h2><a href="#/c/연예·스포츠">더보기 &gt;</a></div><ul class="txt" id="ent"></ul></section>
+    <section class="sec"><div class="sec-h"><h2>취재파일</h2><a href="#/c/취재파일">더보기 &gt;</a></div><ul class="txt" id="cov"></ul></section>
+   </div>
+   <div class="ad" data-slot="bottom-banner"></div>
+   </div>
+   <article id="article" hidden></article>
+   <section id="cat" hidden></section>
+  </main>
+  <aside class="side">
+   <div class="ad" data-slot="side-1" style="margin-top:0"></div>
+   <div class="sec-h" style="margin-top:6px"><h2>많이 본 뉴스</h2></div>
+   <ol class="rank" id="focus"></ol>
+   <div class="ad" data-slot="side-2"></div>
+   <div class="sec-h"><h2>포토</h2></div>
+   <div class="photo" id="photo"></div>
+  </aside>
+ </div>
+</div>
+
+<footer>
+ <div class="f-links"><div class="wrap"><ul id="f-links"></ul></div></div>
+ <div class="wrap">
+  <div class="f-main">
+   <div><div class="f-logo">데일리<em>뉴스</em></div><div class="f-info" id="f-info"></div><div class="f-sns" id="f-sns"></div></div>
+   <div><h4>뉴스</h4><ul id="f-news"></ul></div>
+   <div><h4>고객센터</h4><ul id="f-cs"></ul></div>
+   <div><h4>제휴·광고</h4><ul id="f-biz"></ul></div>
+  </div>
+  <div class="f-bottom" id="f-bottom"></div>
+ </div>
+</footer>
+
+<script type="module">
+/* =====================================================================
+   1) 광고 설정  ← 광고는 여기만 수정하세요
+   slot: HTML 의 data-slot 과 같은 이름 / enabled:false 면 숨김
+   type: "image"(이미지) 또는 "html"(애드센스 등 코드)
+   image: 이미지 경로  link: 클릭 주소  width/height: 크기(px)
+   ▼ 기사 페이지 전용 슬롯: article-top(제목 아래) / article-mid(본문 중간) / article-bottom(본문 끝)
+   본문 중간 광고 위치: 아래 ARTICLE_AD_AFTER (몇 번째 문단 뒤에 넣을지)
+   ===================================================================== */
+const ARTICLE_AD_AFTER = 2;
+const ADS = [
+  {slot:"top-banner",     enabled:true, type:"image", image:"", link:"https://example.com", alt:"상단 배너 광고", width:970, height:90},
+  {slot:"mid-banner",     enabled:true, type:"image", image:"", link:"https://example.com", alt:"중간 배너 광고", width:728, height:90},
+  {slot:"bottom-banner",  enabled:true, type:"image", image:"", link:"https://example.com", alt:"하단 배너 광고", width:728, height:90},
+  {slot:"side-1",         enabled:true, type:"image", image:"", link:"https://example.com", alt:"사이드 광고 1",  width:300, height:250},
+  {slot:"side-2",         enabled:true, type:"html",  html:"", width:300, height:250},
+  {slot:"article-top",    enabled:true, type:"image", image:"", link:"https://example.com", alt:"기사 상단 광고", width:728, height:90},
+  {slot:"article-mid",    enabled:true, type:"image", image:"", link:"https://example.com", alt:"기사 중간 광고", width:728, height:120},
+  {slot:"article-bottom", enabled:true, type:"image", image:"", link:"https://example.com", alt:"기사 하단 광고", width:728, height:90}
+];
+
+/* =====================================================================
+   2) 기사 모음  ← 기사는 여기에 추가·수정하세요 (전부 가상의 예시)
+   id: 겹치지 않는 영문/숫자 이름   cat: 분류   t: 제목   s: 한 줄 요약(목록·부제)
+   time: 입력 시각   rep: 기자명   img: 대표 이미지 경로(없으면 빈칸)   cap: 사진 설명
+   body: 본문 — 문단 하나가 문자열 하나. 쉼표로 이어서 추가
+   ===================================================================== */
+let ARTICLES = [
+ {id:"a1",cat:"사회",t:"지역 축제 사흘간 20만 명 몰려…주변 상권 '활기'",s:"인근 상인들은 지난해보다 매출이 크게 늘었다고 입을 모았다.",time:"2026.10.13 09:12",rep:"홍길동",img:"",cap:"▲ 사진 설명이 들어가는 자리 (사진=데일리뉴스)",
+  body:["지난 10일부터 사흘간 열린 지역 축제에 20만 명이 넘는 방문객이 찾은 것으로 집계됐다. 주최 측은 13일 이 같은 내용을 밝혔다.","인근 상인들은 지난해보다 매출이 크게 늘었다고 입을 모았다. 한 음식점 주인은 \"주말 내내 대기 줄이 이어졌다\"고 말했다.","주최 측은 내년에는 행사 기간을 하루 더 늘리는 방안을 검토 중이다. 주차 공간 부족과 교통 혼잡은 보완 과제로 꼽혔다.","※ 이 기사는 가상의 예시입니다."]},
+ {id:"a2",cat:"사회",t:"올가을 첫 한파주의보…내일 아침 영하권",s:"중부 내륙은 기온이 영하로 떨어질 전망이다.",time:"2026.10.13 09:05",rep:"김민수",img:"",cap:"",body:["기상 당국은 내일 아침 중부 내륙을 중심으로 올가을 첫 한파주의보를 발령할 예정이라고 밝혔다.","아침 최저기온은 영하 3도에서 영상 5도 사이로 예상된다. 낮에는 기온이 올라 일교차가 15도 이상 벌어지겠다.","당국은 노약자와 어린이의 건강 관리와 농작물 냉해 예방에 신경 써 달라고 당부했다."]},
+ {id:"a3",cat:"사회",t:"시내버스 노선 개편 시작, 달라지는 점은",s:"환승 체계가 단순해지고 배차 간격이 줄어든다.",time:"2026.10.13 08:48",rep:"이서연",img:"",cap:"",body:["이번 달부터 시내버스 노선이 개편됐다. 중복 구간을 줄이고 환승 체계를 단순하게 바꾸는 것이 핵심이다.","출퇴근 시간대 배차 간격은 평균 3분 줄어든다. 일부 노선은 번호가 바뀌어 이용 전 확인이 필요하다.","시는 한 달간 안내 요원을 주요 정류장에 배치해 이용객 혼선을 줄이겠다고 밝혔다."]},
+ {id:"a4",cat:"사회",t:"청년 일자리 사업 신청 접수 시작",s:"만 19세에서 34세 대상, 다음 달 말까지 접수한다.",time:"2026.10.13 08:30",rep:"박지훈",img:"",cap:"",body:["지자체가 청년 일자리 사업 참여자 모집을 시작했다. 만 19세에서 34세 미취업 청년이 대상이다.","접수는 다음 달 말까지이며 온라인으로 신청할 수 있다. 선발된 청년은 6개월간 지역 기업에서 근무하며 급여를 받는다.","자세한 자격 요건은 담당 부서 누리집에서 확인할 수 있다."]},
+ {id:"a5",cat:"경제",t:"소비자물가 석 달 만에 상승 폭 둔화",s:"농산물 가격이 안정세를 보인 영향이다.",time:"2026.10.13 08:40",rep:"최유진",img:"",cap:"",body:["이달 소비자물가 상승률이 석 달 만에 둔화한 것으로 나타났다. 농산물 가격이 안정세를 보인 영향이 컸다.","다만 외식비와 공공요금은 오름세가 이어지고 있어 체감 물가는 여전히 높다는 평가가 나온다.","전문가들은 연말까지 완만한 둔화 흐름이 이어질 것으로 내다봤다."]},
+ {id:"a6",cat:"정치",t:"국회, 내일 예산안 심사 착수",s:"여야는 증액 규모를 두고 입장차를 보이고 있다.",time:"2026.10.13 08:15",rep:"정하늘",img:"",cap:"",body:["국회가 내일부터 내년도 예산안 심사에 들어간다. 여야는 복지와 연구개발 예산 증액 규모를 두고 입장차를 보이고 있다.","각 상임위원회는 부처별 예산을 차례로 살펴볼 예정이다. 처리 시한은 다음 달 말이다."]},
+ {id:"a7",cat:"경제",t:"수출 증가세 이어져…반도체 호조",s:"반도체와 자동차가 전체 증가세를 이끌었다.",time:"2026.10.13 07:50",rep:"오세진",img:"",cap:"",body:["이달 들어 열흘간 수출이 전년 같은 기간보다 증가했다. 반도체와 자동차가 증가세를 이끌었다.","반면 일부 소비재 품목은 부진했다. 관계 부처는 수출 지원책을 보완하겠다고 밝혔다."]},
+ {id:"a8",cat:"경제",t:"주요 기업 3분기 실적 발표 줄이어",s:"업종별로 희비가 엇갈릴 전망이다.",time:"2026.10.13 07:30",rep:"한지민",img:"",cap:"",body:["이번 주부터 주요 기업들이 3분기 실적을 잇따라 발표한다. 업종별로 희비가 엇갈릴 것이란 전망이 나온다.","시장에서는 반도체와 방산 업종의 실적 개선에 기대를 걸고 있다."]},
+ {id:"a9",cat:"경제",t:"기준금리 동결 전망에 시장 관망",s:"다음 주 금융통화위원회를 앞두고 있다.",time:"2026.10.13 07:20",rep:"한지민",img:"",cap:"",body:["다음 주 금융통화위원회를 앞두고 기준금리가 동결될 것이란 전망이 우세하다.","투자자들은 물가와 환율 흐름을 지켜보며 관망세를 보이고 있다."]},
+ {id:"a10",cat:"경제",t:"부동산 거래량 두 달 연속 증가",s:"수도권 아파트 거래가 늘었다.",time:"2026.10.13 07:10",rep:"오세진",img:"",cap:"",body:["지난달 전국 주택 거래량이 두 달 연속 증가했다. 수도권 아파트 거래가 늘어난 영향이다.","전문가들은 금리 방향에 따라 거래 흐름이 달라질 수 있다고 말했다."]},
+ {id:"a11",cat:"정치",t:"정당 대표 회동…민생 현안 논의",s:"물가와 일자리 대책이 주요 의제였다.",time:"2026.10.13 07:00",rep:"정하늘",img:"",cap:"",body:["여야 대표가 오늘 회동을 갖고 민생 현안을 논의했다. 물가와 일자리 대책이 주요 의제로 올랐다.","양측은 정기국회에서 관련 법안을 우선 처리하자는 데 공감대를 이뤘다."]},
+ {id:"a12",cat:"사회",t:"도심 하천 정비 마무리, 주말 시민에 개방",s:"산책로와 자전거길이 새로 놓였다.",time:"2026.10.13 08:20",rep:"이서연",img:"",cap:"",body:["도심 하천 정비 사업이 마무리돼 이번 주말 시민들에게 개방된다. 산책로와 자전거길이 새로 놓였다.","시는 야간 조명도 함께 설치했다고 밝혔다. 하천 주변에는 쉼터와 운동 시설도 마련됐다."]},
+ {id:"a13",cat:"사회",t:"초등학교 앞 스쿨존 단속 카메라 확대",s:"올해 안에 관내 40곳에 추가 설치된다.",time:"2026.10.13 07:55",rep:"김민수",img:"",cap:"",body:["어린이 보호구역 단속 카메라가 확대된다. 올해 안에 관내 40곳에 추가로 설치될 예정이다.","시는 사고가 잦은 곳부터 우선 설치하고 내년에 나머지 구역으로 넓힐 계획이다."]},
+ {id:"a14",cat:"사회",t:"119 신고 접수 체계 개선…출동 시간 단축",s:"신고 위치를 자동으로 확인하는 시스템이 도입됐다.",time:"2026.10.13 07:30",rep:"박지훈",img:"",cap:"",body:["119 신고 접수 체계가 개선됐다. 신고자의 위치를 자동으로 확인하는 시스템이 도입돼 출동 시간이 줄어들 전망이다.","소방 당국은 시범 운영 결과 평균 출동 시간이 약 40초 단축됐다고 설명했다."]},
+ {id:"a15",cat:"연예·스포츠",t:"신작 영화 개봉 첫 주말 관객 1위",s:"개봉 사흘 만에 관객 100만 명을 넘겼다.",time:"2026.10.13 08:00",rep:"윤아름",img:"",cap:"",body:["신작 영화가 개봉 첫 주말 박스오피스 1위에 올랐다. 사흘 만에 관객 100만 명을 넘겼다.","영화관 측은 가족 단위 관객이 많았다고 전했다."]},
+ {id:"a16",cat:"연예·스포츠",t:"프로야구 포스트시즌 1차전 승리",s:"9회 말 역전 끝내기로 기선을 제압했다.",time:"2026.10.13 07:40",rep:"강태호",img:"",cap:"",body:["프로야구 포스트시즌 1차전에서 홈팀이 9회 말 역전 끝내기로 승리했다.","2차전은 내일 같은 장소에서 열린다."]},
+ {id:"a17",cat:"연예·스포츠",t:"인기 가수 정규 앨범 발매 기념 쇼케이스",s:"타이틀곡 무대를 처음 공개했다.",time:"2026.10.13 07:20",rep:"윤아름",img:"",cap:"",body:["인기 가수가 정규 앨범 발매를 기념해 쇼케이스를 열고 타이틀곡 무대를 처음 공개했다.","가수는 \"오랜 시간 준비한 앨범인 만큼 많이 들어 주시면 좋겠다\"고 말했다."]},
+ {id:"a18",cat:"연예·스포츠",t:"국가대표 평가전 명단 발표",s:"신예 선수 세 명이 처음 발탁됐다.",time:"2026.10.13 07:00",rep:"강태호",img:"",cap:"",body:["축구 국가대표팀이 이달 평가전에 나설 명단을 발표했다. 신예 선수 세 명이 처음 발탁됐다.","감독은 \"경쟁력을 점검하는 기회로 삼겠다\"고 말했다."]},
+ {id:"a19",cat:"취재파일",t:"[취재파일] 달라진 출근길, 현장을 가 보니",s:"버스 노선 개편 첫 주의 풍경을 담았다.",time:"2026.10.13 06:50",rep:"이서연",img:"",cap:"",body:["노선 개편 첫 출근길, 정류장에는 새 노선도를 살피는 시민들이 눈에 띄었다.","\"번호가 바뀐 줄 모르고 한참 기다렸다\"는 시민도 있었다. 현장에서 본 문제점과 개선점을 정리했다."]},
+ {id:"a20",cat:"취재파일",t:"[취재파일] 전통시장 디지털 전환의 명암",s:"온라인 주문을 도입한 시장 상인들을 만났다.",time:"2026.10.13 06:40",rep:"최유진",img:"",cap:"",body:["전통시장에 온라인 주문과 배달 서비스가 도입되고 있다. 매출이 늘었다는 상인도, 부담이 커졌다는 상인도 있었다.","현장 목소리를 통해 지원 방향을 짚어 본다."]},
+ {id:"a21",cat:"취재파일",t:"[취재파일] 학교 급식 현장의 하루",s:"새벽 6시, 조리실의 하루가 시작된다.",time:"2026.10.13 06:30",rep:"박지훈",img:"",cap:"",body:["새벽 6시, 학교 조리실에 불이 켜진다. 수백 명분의 식사를 준비하는 하루가 시작된다.","조리 종사자들은 폭염과 인력 부족을 가장 큰 어려움으로 꼽았다."]}
+];
+
+/* =====================================================================
+   3) 메인 화면 구성  ← 메뉴·포토만 여기서 수정 (기사 배치는 자동)
+   헤드라인: 관리자 화면에서 "헤드라인" 체크한 기사(없으면 가장 최신 기사)
+   나머지 칸: 분류와 최신순으로 자동 채움
+   ===================================================================== */
+const SITE = {
+  menu:["홈","정치","경제","사회","국제","IT·과학","문화","연예","스포츠","오피니언","영상"],
+  photo:[{t:"가상 사진: 가을 하늘 아래 억새 물결",img:""},{t:"가상 사진: 새벽 시장의 풍경",img:""}]
+};
+function buildSite(){
+  const L=[...ARTICLES].sort((x,y)=>y.time.localeCompare(x.time));
+  const feat=L.find(x=>x.featured)||L[0];
+  const rest=L.filter(x=>x!==feat);
+  const is=(x,...k)=>x.cat.split('·').some(c=>k.includes(c));
+  const ids=(arr,n,sk=0)=>arr.slice(sk,sk+n).map(x=>x.id);
+  const biz=rest.filter(x=>is(x,'정치','경제'));
+  Object.assign(SITE,{
+    latest:ids(L,4), headline:feat.id, sub:ids(rest,3),
+    biz:ids(biz,3), bizList:ids(biz,4,3),
+    soc:ids(rest.filter(x=>is(x,'사회')),3),
+    ent:ids(rest.filter(x=>is(x,'연예','스포츠','문화')),4),
+    cov:ids(rest.filter(x=>is(x,'취재파일')),3),
+    focus:ids(L,6)
+  });
+}
+
+/* =====================================================================
+   4) 푸터 정보  ← 회사 정보·링크는 여기만 수정하세요 (전부 가상의 예시)
+   ===================================================================== */
+const FOOTER={
+  links:["회사소개","개인정보처리방침","청소년보호정책","이용약관","저작권 안내","이메일무단수집거부"],
+  news:["정치","경제","사회","국제","IT·과학","스포츠"],
+  cs:["공지사항","제보하기","정정·반론 보도 요청","기사 오류 신고","1:1 문의"],
+  biz:["광고 문의","제휴 문의","콘텐츠 제공 문의","채용 정보"],
+  sns:[["유튜","https://youtube.com"],["페북","https://facebook.com"],["인스타","https://instagram.com"],["X","https://x.com"]],
+  info:["상호: (주)데일리뉴스 · 대표이사: 홍길동","주소: 서울특별시 ○○구 ○○로 123 데일리뉴스빌딩","대표전화: 02-000-0000 · 팩스: 02-000-0001 · 이메일: help@example.com","사업자등록번호: 000-00-00000"],
+  reg:"인터넷신문 등록번호: 서울 아00000 · 등록일: 2026.01.01 · 발행인·편집인: 홍길동 · 청소년보호책임자: 김철수",
+  copy:"Copyright © DAILYNEWS. All rights reserved. 본 사이트의 모든 콘텐츠는 저작권법의 보호를 받으며 무단 전재, 복사, 배포를 금지합니다."
+};
+
+/* ===== 렌더링 (수정 불필요) ===== */
+const $=id=>document.getElementById(id);
+let BY={};
+const G=id=>BY[id];
+const ph=(img,r)=>`<div class="ph ${r} ${img?'has':''}">${img?`<img src="${img}" alt="">`:''}</div>`;
+const A=a=>`<a href="#/a/${a.id}">${a.t}</a>`;
+const li=arr=>arr.map(t=>`<li><a href="#">${t}</a></li>`).join('');
+const liC=arr=>arr.map(t=>`<li><a href="#/c/${encodeURIComponent(t)}">${t}</a></li>`).join('');
+const short=t=>t.slice(5,10).replace('.','.')+' '+t.slice(11);
+
+$('today').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+$('menu').innerHTML=SITE.menu.map((m,i)=>`<li><a href="${i?'#/c/'+encodeURIComponent(m):'#/'}">${m}</a></li>`).join('');
+const NOTICE="본 사이트의 기사·인물·단체는 모두 가상이며 실제와 무관합니다.";   /* 실제 기사로 교체하면 이 문구를 빈 문자열("")로 바꾸세요 */
+function renderCat(name){
+  const keys=name.split('·');
+  const list=ARTICLES.filter(a=>a.cat===name||a.cat.split('·').some(c=>keys.includes(c)));
+  $('cat').innerHTML=`<div class="sec-h" style="border-bottom:2px solid #1b7a3d;padding-bottom:8px"><h2>${name}</h2></div>
+   <div class="ad" data-slot="mid-banner"></div>
+   ${list.length?`<ul class="row" style="margin-top:10px">${list.map(a=>`<li style="padding:12px 0">${ph(a.img,'r43')}<div>${A(a)}<p>${a.s||''}</p><div class="time">${a.rep} 기자 · ${a.time}</div></div></li>`).join('')}</ul>`:`<p style="padding:50px 0;color:#888;text-align:center">등록된 기사가 없습니다.</p>`}
+   <a class="a-back" href="#/">← 홈으로</a>`;
+  document.title=name+' - 데일리뉴스';
+}
+
+function renderHome(){
+  const h=G(SITE.headline);
+  $('headline').innerHTML=`<div class="top-grid"><div class="big">
+   <a href="#/a/${h.id}">${ph(h.img,'r169')}</a><div class="cap">${h.cap}</div>
+   <h1>${A(h)}</h1><p>${h.s}</p><div class="time">${h.time}</div></div>
+   <ul class="sub">${SITE.sub.map(G).map(a=>`<li>${ph(a.img,'r43')}<div>${A(a)}<div class="time">${short(a.time)}</div></div></li>`).join('')}</ul></div>`;
+  $('biz').innerHTML=SITE.biz.map(G).map(a=>`<div>${ph(a.img,'r43')}<h3>${A(a)}</h3><div class="time">${short(a.time)}</div></div>`).join('')
+   +`<ul class="txt" style="grid-column:1/-1">${SITE.bizList.map(G).map(a=>`<li>${A(a)}</li>`).join('')}</ul>`;
+  $('soc').innerHTML=SITE.soc.map(G).map(a=>`<li>${ph(a.img,'r43')}<div>${A(a)}<p>${a.s}</p><div class="time">${short(a.time)}</div></div></li>`).join('');
+  $('ent').innerHTML=SITE.ent.map(G).map(a=>`<li>${A(a)}</li>`).join('');
+  $('cov').innerHTML=SITE.cov.map(G).map(a=>`<li>${A(a)}</li>`).join('');
+}
+function renderSide(){
+$('focus').innerHTML=SITE.focus.map(G).map((a,i)=>`<li><b>${i+1}</b>${A(a)}</li>`).join('');
+$('photo').innerHTML=SITE.photo.map(p=>`<div>${ph(p.img,'r43')}<p>${p.t}</p></div>`).join('');
+let i=0;const tick=()=>{const a=G(SITE.latest[i%SITE.latest.length]);$('ticker').innerHTML=A(a);i++};tick();setInterval(tick,5000);
+}
+
+function renderArticle(id){
+  const a=G(id);
+  if(!a){$('article').innerHTML=`<p style="padding:40px 0">기사를 찾을 수 없습니다.</p><a class="a-back" href="#/">← 홈으로</a>`;return;}
+  const paras=a.body.map((p,k)=>`<p>${p}</p>`+(k+1===ARTICLE_AD_AFTER?`<div class="ad" data-slot="article-mid"></div>`:'')).join('');
+  const rel=ARTICLES.filter(x=>x.cat===a.cat&&x.id!==a.id).slice(0,4);
+  $('article').innerHTML=`
+   <div class="a-cat">${a.cat}</div>
+   <h1 class="a-title">${a.t}</h1>
+   <div class="a-meta"><span>${a.rep} 기자 · 입력 ${a.time}</span><button id="share">링크 복사</button></div>
+   <div class="ad" data-slot="article-top"></div>
+   ${a.s?`<div class="a-sub">${a.s}</div>`:''}
+   ${a.img?`<div class="ph r169 has"><img src="${a.img}" alt=""></div>`:''}${a.cap?`<div class="cap" style="margin-bottom:16px">${a.cap}</div>`:''}
+   <div class="a-body">${paras}</div>
+   <div class="a-end">${a.rep} 기자 · 데일리뉴스${NOTICE?" · "+NOTICE:""}</div>
+   <div class="ad" data-slot="article-bottom"></div>
+   ${rel.length?`<div class="sec"><div class="sec-h"><h2>관련 기사</h2></div><ul class="txt">${rel.map(x=>`<li>${A(x)}</li>`).join('')}</ul></div>`:''}
+   <a class="a-back" href="#/">← 목록으로</a>`;
+  $('share').onclick=()=>{const u=location.href;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>alert('링크를 복사했습니다'),()=>prompt('링크를 복사하세요',u))};
+  document.title=a.t+' - 데일리뉴스';
+}
+
+/* 광고 렌더링 (화면이 바뀔 때마다 새로 생긴 슬롯만 처리) */
+function renderAds(){
+  document.querySelectorAll('.ad[data-slot]:not([data-done])').forEach(el=>{
+    el.dataset.done=1;
+    const a=ADS.find(x=>x.slot===el.dataset.slot);
+    if(!a||a.enabled===false){el.remove();return;}
+    if(a.type==="html"&&a.html){
+      el.innerHTML=a.html;
+      el.querySelectorAll('script').forEach(s=>{const n=document.createElement('script');[...s.attributes].forEach(t=>n.setAttribute(t.name,t.value));n.text=s.text;s.replaceWith(n)});
+    }else if(a.type==="image"&&a.image){
+      el.innerHTML=`<a href="${a.link||'#'}" target="_blank" rel="sponsored noopener"><img src="${a.image}" alt="${a.alt||'광고'}" width="${a.width}" height="${a.height}"></a><span class="label">광고</span>`;
+    }else{
+      el.innerHTML=`<div class="ad-placeholder" style="width:${a.width}px;max-width:100%;height:${a.height}px">광고 · ${a.slot} (${a.width}×${a.height})</div>`;
+    }
+  });
+}
+
+/* 화면 전환: #/ = 홈, #/a/아이디 = 기사 */
+function route(){
+  const m=location.hash.match(/^#\/a\/(.+)$/), c=location.hash.match(/^#\/c\/(.+)$/);
+  $('home').hidden=!!(m||c);$('article').hidden=!m;$('cat').hidden=!c;
+  if(m)renderArticle(decodeURIComponent(m[1]));
+  else if(c)renderCat(decodeURIComponent(c[1]));
+  else document.title='데일리뉴스';
+  renderAds();window.scrollTo(0,0);
+}
+$('f-links').innerHTML=li(FOOTER.links);$('f-news').innerHTML=liC(FOOTER.news);
+$('f-cs').innerHTML=li(FOOTER.cs);$('f-biz').innerHTML=li(FOOTER.biz);
+$('f-info').innerHTML=FOOTER.info.join('<br>');
+$('f-sns').innerHTML=FOOTER.sns.map(([n,u])=>`<a href="${u}" target="_blank" rel="noopener">${n}</a>`).join('');
+$('f-bottom').innerHTML=FOOTER.reg+'<br>'+FOOTER.copy+(NOTICE?'<br><b>'+NOTICE+'</b>':'');
+
+/* Firebase 에서 기사 불러오기 (설정 전이거나 실패하면 위의 샘플 기사 표시) */
+async function start(){
+  try{
+    const cfg=(await import('./firebase-config.js')).firebaseConfig;
+    if(cfg&&cfg.apiKey&&!cfg.apiKey.includes('여기')){
+      const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
+      const {initializeApp}=await import(B+'firebase-app.js');
+      const {getFirestore,collection,getDocs,query,orderBy,limit}=await import(B+'firebase-firestore.js');
+      const db=getFirestore(initializeApp(cfg));
+      const snap=await getDocs(query(collection(db,'articles'),orderBy('time','desc'),limit(30)));
+      const arr=snap.docs.map(d=>{const v=d.data();return {id:d.id,cat:v.cat||'사회',t:v.t||'',s:v.s||'',time:v.time||'',rep:v.rep||'',img:v.img||'',cap:v.cap||'',featured:!!v.featured,body:Array.isArray(v.body)?v.body:[]}});
+      if(arr.length)ARTICLES=arr;
+    }
+  }catch(e){console.warn('Firebase 불러오기 실패 - 샘플 기사 표시',e)}
+  BY=Object.fromEntries(ARTICLES.map(a=>[a.id,a]));
+  buildSite();renderHome();renderSide();
+  window.addEventListener('hashchange',route);route();
+}
+start();
+</script>
+</body>
+</html>
